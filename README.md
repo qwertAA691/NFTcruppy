@@ -10,87 +10,107 @@
         font-family: Arial, sans-serif;
         background: #0a0a0a;
         color: white;
-        text-align: center;
     }
     .screen {
         display: none;
         min-height: 100vh;
         padding-top: 50px;
+        text-align: center;
     }
-    .active {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+    .active { display: block; }
+    h2 { margin-bottom: 20px; }
     button {
-        padding: 12px 30px;
-        margin: 8px;
-        font-size: 18px;
+        padding: 10px 25px;
+        font-size: 16px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
+        margin: 8px;
         transition: 0.3s;
     }
     button:hover { transform: scale(1.05); }
+    .menu-btn {
+        background: #222;
+        color: white;
+        border: 1px solid #555;
+    }
     .info-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 320px;
         background: #1a1a1a;
         padding: 10px;
-        margin: 8px;
-        border-radius: 8px;
+        margin: 8px auto;
+        width: 350px;
+        border-radius: 6px;
     }
-    .info-btn { flex: 1; margin-right: 8px; }
     .tag {
-        font-size: 14px;
-        padding: 4px 6px;
+        padding: 3px 8px;
         border-radius: 4px;
+        font-size: 12px;
         white-space: nowrap;
     }
     .free { background: #4caf50; }
     .first { background: gold; color: black; }
     .second { background: #ff00ff; }
+    .symbol { font-size: 18px; }
     #username-display {
         position: fixed;
         top: 10px;
         right: 15px;
-        background: rgba(255,255,255,0.1);
-        padding: 5px 10px;
+        background: rgba(255,255,255,0.05);
+        padding: 6px 10px;
         border-radius: 6px;
         font-size: 14px;
         color: gold;
-        display: none;
+    }
+    #logout-btn {
+        display: block;
+        font-size: 12px;
+        color: red;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: 4px;
     }
     input {
-        padding: 10px;
-        font-size: 16px;
+        padding: 8px;
+        font-size: 14px;
         border-radius: 6px;
         border: none;
         margin: 5px;
     }
+    .price-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
     .price-option {
-        background: linear-gradient(45deg, #333, #555);
-        color: white;
+        background: #222;
         padding: 15px;
         border-radius: 8px;
         cursor: pointer;
-        width: 260px;
-        margin: 8px 0;
+        width: 200px;
         transition: 0.3s;
+        border: 1px solid #555;
     }
     .price-option:hover { transform: scale(1.05); }
 </style>
 </head>
 <body>
 
-<div id="username-display"></div>
-
-<div id="start-screen" class="screen active">
-    <button style="background:linear-gradient(45deg,#ff5f5f,#ff8f8f);color:white;box-shadow:0 0 20px rgba(255,80,80,0.8);" onclick="goToAuth()">НАЧАТЬ</button>
+<div id="username-display" style="display:none;">
+    <span id="username-text"></span>
+    <button id="logout-btn" onclick="logout()">Выйти</button>
 </div>
 
+<!-- Экран старт -->
+<div id="start-screen" class="screen active">
+    <button style="background:linear-gradient(45deg,#ff5f5f,#ff8f8f);" onclick="goToAuth()">НАЧАТЬ</button>
+</div>
+
+<!-- Экран авторизация -->
 <div id="auth-screen" class="screen">
     <h2>Вход или регистрация</h2>
     <input type="text" id="auth-username" placeholder="Username"><br>
@@ -99,41 +119,73 @@
     <button onclick="register()">Регистрация</button>
 </div>
 
-<div id="info-screen" class="screen">
-    <h2>Выберите информацию</h2>
-    <div class="info-row">
-        <button class="info-btn" onclick="getInfo(0)">📅 Дата выхода подарков</button>
-        <div class="tag free">Бесплатно</div>
-    </div>
-    <div class="info-row">
-        <button class="info-btn" onclick="getInfo(1)">📰 NFT каналы + боты</button>
-        <div class="tag first">Первый класс</div>
-    </div>
-    <div class="info-row">
-        <button class="info-btn" onclick="getInfo(2)">👑 Автоскупка и скрипты</button>
-        <div class="tag second">Второй класс</div>
-    </div>
-    <div class="info-row">
-        <button class="info-btn" onclick="getInfo(3)">💎 Премиум функции</button>
-        <div class="tag second">Второй класс</div>
-    </div>
+<!-- Главное меню -->
+<div id="main-menu" class="screen">
+    <h2>Главное меню</h2>
+    <button class="menu-btn" onclick="showScreen('functions-screen')">Функции</button>
+    <button class="menu-btn" onclick="showScreen('buy-screen')">Купить подписку</button>
+    <button class="menu-btn" onclick="showScreen('ref-screen')">Реферальная программа</button>
+    <button class="menu-btn" onclick="showScreen('support-screen')">Поддержка</button>
+    <button class="menu-btn" onclick="logout()">Выйти</button>
 </div>
 
+<!-- Экран функций -->
+<div id="functions-screen" class="screen">
+    <h2>Доступные функции</h2>
+    <div class="info-row">
+        <span>📅 Дата выхода подарков</span>
+        <span class="symbol" id="check-0">❌</span>
+    </div>
+    <div class="info-row">
+        <span>📰 NFT каналы + боты</span>
+        <span class="symbol" id="check-1">❌</span>
+    </div>
+    <div class="info-row">
+        <span>🤖 Автоскупка + скрипты</span>
+        <span class="symbol" id="check-2">❌</span>
+    </div>
+    <div class="info-row">
+        <span>💎 Скрипт от автора</span>
+        <span class="symbol" id="check-3">❌</span>
+    </div>
+    <button onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<!-- Экран покупки -->
 <div id="buy-screen" class="screen">
-    <h2>Купить подписку</h2>
-    <div class="price-option" onclick="buySub('first')">Первый класс — 2000 ⭐ / ₽ / $</div>
-    <div class="price-option" onclick="buySub('second')">Второй класс — 10000 ⭐ / ₽ / $</div>
-    <button onclick="goToInfo()">Назад</button>
+    <h2>Выберите подписку</h2>
+    <div class="price-container">
+        <div class="price-option" onclick="buySub('first')">
+            <h3>Первый класс</h3>
+            <p>Доступ к NFT каналам и ботам</p>
+            <p>Цена: 2000 звёзд / ₽ / $</p>
+        </div>
+        <div class="price-option" onclick="buySub('second')">
+            <h3>Второй класс</h3>
+            <p>Всё + Премиум скрипт от автора</p>
+            <p>Цена: 10000 звёзд / ₽ / $</p>
+        </div>
+    </div>
+    <button onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<!-- Реферальная -->
+<div id="ref-screen" class="screen">
+    <h2>Реферальная программа</h2>
+    <p>Обратись к менеджеру @Juilly для получения подробностей.</p>
+    <button onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<!-- Поддержка -->
+<div id="support-screen" class="screen">
+    <h2>Поддержка</h2>
+    <p>Напишите менеджеру @Juilly для помощи.</p>
+    <button onclick="showScreen('main-menu')">Назад</button>
 </div>
 
 <script>
-let users = JSON.parse(localStorage.getItem('users')) || {};
+let users = JSON.parse(localStorage.getItem('users') || '{}');
 let currentUser = null;
-
-function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
 
 function goToAuth() {
     showScreen('auth-screen');
@@ -142,53 +194,71 @@ function goToAuth() {
 function register() {
     let u = document.getElementById('auth-username').value;
     let p = document.getElementById('auth-password').value;
-    if (!u || !p) return alert("Введите логин и пароль");
-    if (users[u]) return alert("Пользователь уже есть");
-    users[u] = { password: p, sub: 'none' };
+    if (!u || !p) { alert('Введите все данные'); return; }
+    if (users[u]) { alert('Пользователь уже существует'); return; }
+    users[u] = { password: p, sub: null };
     localStorage.setItem('users', JSON.stringify(users));
-    alert("Регистрация успешна");
+    alert('Регистрация успешна');
 }
 
 function login() {
     let u = document.getElementById('auth-username').value;
     let p = document.getElementById('auth-password').value;
-    if (!users[u] || users[u].password !== p) return alert("Неверные данные");
-    currentUser = u;
-    document.getElementById('username-display').textContent = u;
-    document.getElementById('username-display').style.display = 'block';
-    showScreen('info-screen');
-}
-
-function getInfo(id) {
-    let sub = users[currentUser].sub;
-    let allowed = {
-        none: [0],
-        first: [0,1],
-        second: [0,1,2,3]
-    };
-    if (allowed[sub].includes(id)) {
-        let infoTexts = [
-            "Дата выхода новых Telegram подарков: ожидается в конце месяца.",
-            "Список топ NFT каналов и ботов: ...",
-            "Боты для автоскупки и скрипты: ...",
-            "Премиум функции: аналитика подарков, авто-уведомления и многое другое."
-        ];
-        alert(infoTexts[id]);
+    if (users[u] && users[u].password === p) {
+        currentUser = u;
+        localStorage.setItem('currentUser', u);
+        showUsername();
+        showScreen('main-menu');
+        updateChecks();
     } else {
-        showScreen('buy-screen');
+        alert('Неверные данные');
     }
 }
 
-function buySub(type) {
-    users[currentUser].sub = type;
-    localStorage.setItem('users', JSON.stringify(users));
-    alert("Подписка активирована!");
-    showScreen('info-screen');
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    document.getElementById('username-display').style.display = 'none';
+    showScreen('start-screen');
 }
 
-function goToInfo() {
-    showScreen('info-screen');
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'functions-screen') updateChecks();
 }
+
+function showUsername() {
+    document.getElementById('username-display').style.display = 'block';
+    document.getElementById('username-text').innerText = currentUser;
+}
+
+function buySub(type) {
+    if (!currentUser) return;
+    users[currentUser].sub = type;
+    localStorage.setItem('users', JSON.stringify(users));
+    alert('Подписка оформлена: ' + type);
+    updateChecks();
+}
+
+function updateChecks() {
+    let sub = users[currentUser]?.sub;
+    document.getElementById('check-0').innerText = '✅'; // бесплатная
+    document.getElementById('check-1').innerText = (sub === 'first' || sub === 'second') ? '✅' : '❌';
+    document.getElementById('check-2').innerText = (sub === 'second') ? '✅' : '❌';
+    document.getElementById('check-3').innerText = (sub === 'second') ? '✅' : '❌';
+}
+
+// авто вход
+window.onload = () => {
+    let saved = localStorage.getItem('currentUser');
+    if (saved && users[saved]) {
+        currentUser = saved;
+        showUsername();
+        showScreen('main-menu');
+    }
+};
 </script>
+
 </body>
 </html>
